@@ -23,6 +23,8 @@ class CarModel(BaseModel):
     cm3: int = Field(..., gt=0, lt=5000)
     km: int = Field(..., gt=0, lt=500000)
     price: int = Field(..., gt=0, lt=100000)
+    user_id: str = Field(...)
+    picture_url: Optional[str] = Field(None)
 
     @field_validator("brand")
     @classmethod
@@ -52,12 +54,13 @@ class CarModel(BaseModel):
 
 class UpdateCarModel(BaseModel):
 
-    brand: Optional[str] = Field(...)
-    make: Optional[str] = Field(...)
-    year: Optional[int] = Field(..., gt=1970, lt=2025)
-    cm3: Optional[int] = Field(..., gt=0, lt=5000)
-    km: Optional[int] = Field(..., gt=0, lt=500 * 1000)
-    price: Optional[int] = Field(..., gt=0, lt=100 * 1000)
+    brand: Optional[str] = None
+    make: Optional[str] = None
+    year: Optional[int] = Field(gt=1970, lt=2025, default=None)
+    cm3: Optional[int] = Field(gt=0, lt=5000, default=None)
+    km: Optional[int] = Field(gt=0, lt=500 * 1000, default=None)
+    price: Optional[int] = Field(gt=0, lt=100 * 1000, default=None)
+    picture_url: Optional[str] = Field(None)
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -77,3 +80,36 @@ class UpdateCarModel(BaseModel):
 
 class CarCollection(BaseModel):
     cars: List[CarModel]
+
+
+class CarCollectionPagination(CarCollection):
+    page: int = Field(ge=1, default=1)
+    has_more: bool
+
+
+class UserModel(BaseModel):
+    id: Optional[PyObjectId] = Field(
+        alias="_id", default=None
+    )
+    username: str = Field(
+        ..., 
+        min_length=3,
+        max_length=15
+    )
+    password: str = Field(...)
+
+
+class LoginModel(BaseModel):
+    username: str = Field(...)
+    password: str = Field(...)
+
+
+class CurrentUserModel(BaseModel):
+    id: PyObjectId = Field(
+        alias="_id", default=None
+    )
+    username: str = Field(
+        ...,
+        min_length=3,
+        max_length=15
+    )
