@@ -96,8 +96,6 @@ async def list_cars(
     request: Request,
     page: int = 1,
     limit: int = CARS_PER_PAGE,
-    user: str = Depends(auth_handler.auth_wrapper)
-    
 ):
     cars = request.app.db["cars"]
 
